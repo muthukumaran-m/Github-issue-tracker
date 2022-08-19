@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\IssueProcessed;
+use App\Jobs\CreateIssue;
+use App\Jobs\UpdateIssue;
 use App\Models\GitIssue;
+use App\Models\Status;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 
 class GitIssueController extends Controller
 {
@@ -15,7 +18,7 @@ class GitIssueController extends Controller
      */
     public function index()
     {
-        //
+        return view('index', ["issues" => GitIssue::orderBy('updated_at','desc')->get()]);
     }
 
     /**
@@ -25,7 +28,7 @@ class GitIssueController extends Controller
      */
     public function create()
     {
-        //
+        return view('welcome');
     }
 
     /**
@@ -36,13 +39,22 @@ class GitIssueController extends Controller
      */
     public function store(Request $request)
     {
+        $this->validate($request, [
+            'title' => 'required|max:255',
+            'description' => 'max:255',
+        ]);
+
+        $open = Config::get('constants.statuses.open');
+
         $issue = new GitIssue();
-
-        $issue->staus_id = 1;
         $issue->title = $request->title;
-        $issue->body = $request->body;
+        $issue->body = $request->description;
+        $issue->status_id = Status::where('code', $open)->value('id');
+        $issue->save();
 
-        IssueProcessed::dispatch($issue);
+        CreateIssue::dispatch($issue);
+
+        return redirect(route('issues.index'));
     }
 
     /**
@@ -51,9 +63,8 @@ class GitIssueController extends Controller
      * @param  \App\Models\GitIssue  $gitIssue
      * @return \Illuminate\Http\Response
      */
-    public function show(GitIssue $gitIssue)
+    public function show(GitIssue $issue)
     {
-        //
     }
 
     /**
@@ -62,9 +73,9 @@ class GitIssueController extends Controller
      * @param  \App\Models\GitIssue  $gitIssue
      * @return \Illuminate\Http\Response
      */
-    public function edit(GitIssue $gitIssue)
+    public function edit(GitIssue $issue)
     {
-        //
+        return view('edit', ["issue" => $issue]);
     }
 
     /**
@@ -74,9 +85,26 @@ class GitIssueController extends Controller
      * @param  \App\Models\GitIssue  $gitIssue
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, GitIssue $gitIssue)
+    public function update(Request $request, GitIssue $issue)
     {
-        //
+        $this->validate($request, [
+            'title' => 'required|max:255',
+            'description' => 'max:255',
+        ]);
+
+        $issue->title = $request->title;
+        $issue->body = $request->description;
+        $issue->save();
+
+        $data = [
+            "title" => $request->title,
+            "body" => $request->description,
+            "id" => $issue->id
+        ];
+
+        UpdateIssue::dispatch($data);
+
+        return redirect(route('issues.index'));
     }
 
     /**
@@ -85,8 +113,18 @@ class GitIssueController extends Controller
      * @param  \App\Models\GitIssue  $gitIssue
      * @return \Illuminate\Http\Response
      */
-    public function destroy(GitIssue $gitIssue)
+    public function destroy(GitIssue $issue)
     {
-        //
+        $closed = Config::get('constants.statuses.closed');
+
+        $state = Status::where('code', $closed)->value('code');
+        $data = [
+            "id" => $issue->id,
+            "state" => $state
+        ];
+        $issue->status_id=Status::where('code', $closed)->value('id');
+        UpdateIssue::dispatch($data);
+
+        return redirect(route('issues.index'));
     }
 }

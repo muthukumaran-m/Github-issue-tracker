@@ -26,25 +26,11 @@ class StatusSeeder extends Seeder
                 ],
                 [
                     "code" => "closed",
-                    "title" => "Close as completed.",
-                    "description" => "Done, Closed, Fixed, Resolved",
+                    "title" => "Closed",
                     "created_at" => Carbon::now(),
                     "updated_at" => Carbon::now(),
                 ],
-                [
-                    "code" => "not_planned",
-                    "title" => "Close as not planned.",
-                    "description" => "Won't fix, can't repro, duplicate, stale",
-                    "created_at" => Carbon::now(),
-                    "updated_at" => Carbon::now(),
-                ],
-                [
-                    "code" => "deleted",
-                    "title" => "Close as not planned.",
-                    "description" => "This can't be undone.",
-                    "created_at" => Carbon::now(),
-                    "updated_at" => Carbon::now(),
-                ]
+               
             ]
         );
     }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\GitIssueController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,5 +15,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect(route('issues.index'));
 });
+
+Route::resource('issues', GitIssueController::class);
+Route::githubWebhooks('github-webhook');
