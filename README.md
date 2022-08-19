@@ -13,9 +13,9 @@ A task to maintain git issues in two way sync using Laravel
 - Install the required packages using ``` npm install ``` and ``` composer update ```
 - Create a database as ``` laravel ```
 - Add the following properties in *.env*
-    - GITHUB_WEBHOOK_SECRET=ooooooooooo
-    - GITHUB_TOKEN='token  xxxxxxxxxxxxxxxxxxxx'
-    - GITHUB_REPO=https://api.github.com/repos/[username]/[repo name]
+    - GITHUB_WEBHOOK_SECRET=``ooooooooooo``
+    - GITHUB_TOKEN=```'token  xxxxxxxxxxxxxxxxxxxx'```
+    - GITHUB_REPO=```https://api.github.com/repos/[username]/[repo name]```
 - Start the php server using ``` php artisan serve ```
 - Run the migration and seeders using ``` php artisan migrate:fresh --seed ```
 - Start the queues, jobs and event listeners using `` php artisan queue:work `` or `` php artisan queue:listen ``
