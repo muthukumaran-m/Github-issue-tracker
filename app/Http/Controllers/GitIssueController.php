@@ -123,6 +123,8 @@ class GitIssueController extends Controller
             "state" => $state
         ];
         $issue->status_id=Status::where('code', $closed)->value('id');
+
+        $issue->save();
         UpdateIssue::dispatch($data);
 
         return redirect(route('issues.index'));
